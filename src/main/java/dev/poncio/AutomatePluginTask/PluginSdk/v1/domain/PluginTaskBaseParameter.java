@@ -1,6 +1,6 @@
-package dev.poncio.AutomatePluginTask.PluginSdk.domain;
+package dev.poncio.AutomatePluginTask.PluginSdk.v1.domain;
 
-import dev.poncio.AutomatePluginTask.PluginSdk.constants.ParameterTypeEnum;
+import dev.poncio.AutomatePluginTask.PluginSdk.v1.constants.ParameterTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PluginTaskInputParameter {
+public class PluginTaskBaseParameter {
 
     private String name;
     private ParameterTypeEnum type;

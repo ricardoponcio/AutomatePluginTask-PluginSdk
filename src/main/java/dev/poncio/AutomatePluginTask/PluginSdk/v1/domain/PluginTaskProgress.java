@@ -1,4 +1,4 @@
-package dev.poncio.AutomatePluginTask.PluginSdk.domain;
+package dev.poncio.AutomatePluginTask.PluginSdk.v1.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
