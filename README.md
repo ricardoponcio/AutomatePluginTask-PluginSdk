@@ -1,161 +1,127 @@
 # PluginSDK
-## An Automate Plugin Task module
 
-### Implementations
+## Overview
 
-#### AbstractPluginTask
+PluginSDK provides the base abstractions and domain model for building plugins compatible with the Automate Plugin Task Engine. It enables developers to create plugins that can be dynamically loaded, executed synchronously or asynchronously, and report progress and results.
 
-Main abstract class that will be used by the engine to run the plugin.  
-Must be extended by the main class in the plugin with the right returns.
+---
 
-The required methods are:
+## Features
 
-1. *String getPluginName()*  
-The name of the plugin
-2. *String getPluginDescription()*  
-A short description of the plugin
-3. *List<PluginExecutionPlanEnum> getAvailableExecutionPlans()*  
-The list of available execution plans (SYNC, ASYNC or ASYNC WITH PROGRESS)
-4. *List<PluginTaskInputParameterPrototype> getInputParametersPrototype()*  
-The list of the parameters prototype required to run the plugin execution
-5. *List<PluginTaskBaseParameterPrototype> getBaseParametersPrototype()*  
-The list of the base parameters prototype required to run the plugin execution
+- Abstract base class for plugin implementation
+- Strongly-typed domain model for parameters, execution plans, and outputs
+- Support for synchronous and asynchronous plugin execution
+- Progress reporting for long-running tasks
+- Maven-based build and dependency management
 
-The optional methods are:
+---
 
-6. *PluginTaskOutput run(List<PluginTaskBaseParameterPrototype> baseParameters, List<PluginTaskInputParameter> inputParameters)*  
-   The main sync plugin execution that will receive the input/base parameters and return a detailed output after process the data
-1. *Callable<PluginTaskOutput> runAsync(List<PluginTaskBaseParameterPrototype> baseParameters, List<PluginTaskInputParameter> inputParameters)*  
-Asynchronous method to be executed by the engine, with the input/base parameters. It should also return a detailed output.
-2. *Callable<PluginTaskOutput> runAsync(List<PluginTaskBaseParameterPrototype> baseParameters, List<PluginTaskInputParameter> inputParameters, Consumer<PluginTaskProgress> progressConsumer)*
-Same as previous, but there is a consumer to process de partial update and improve user experience
+## Implementing a Plugin
 
-### Domain
+### 1. Extend `AbstractPluginTask`
 
-#### PluginTaskInputParameterPrototype
+Create your plugin by extending [`dev.poncio.AutomatePluginTask.PluginSdk.v1.implementation.AbstractPluginTask`](src/main/java/dev/poncio/AutomatePluginTask/PluginSdk/v1/implementation/AbstractPluginTask.java).
 
-The prototype of the parameter needed to the plugin execution. Needs to be filled with:
-1. String *name*    
-Name of parameter, will be used to identify the parameter, must be unique
-2. String *description*    
-Parameter description, that will be displayed in the web page
-3. boolean *secret*  
-If secret, the value of an execution will be not stored in database
-4. boolean *required*    
-If the value must be required at execution time
-5. ParameterTypeEnum *type*    
-Pre defined parameter type
+#### Required methods
 
-#### PluginTaskBaseParameterPrototype
+1. `String getPluginName()`  
+   The name of the plugin.
+2. `String getPluginDescription()`  
+   A short description of the plugin.
+3. `List<PluginExecutionPlanEnum> getAvailableExecutionPlans()`  
+   Supported execution plans (`SYNC`, `ASYNC`, or `ASYNC_WITH_PROGRESS`).
+4. `List<PluginTaskInputParameterPrototype> getInputParametersPrototype()`  
+   Input parameter definitions.
+5. `List<PluginTaskBaseParameterPrototype> getBaseParametersPrototype()`  
+   Base parameter definitions.
 
-The prototype of the base parameter needed to the plugin execution. Needs to be filled with:
-1. String *name*  
-   Name of parameter, will be used to identify the parameter, must be unique
-2. String *description*  
-   Parameter description, that will be displayed in the web page
-3. boolean *secret*  
-   If secret, the value of an execution will be not stored in database
-4. boolean *required*    
-      If the value must be required at execution time
-5. ParameterTypeEnum *type*    
-   Pre defined parameter type
+#### Optional methods
 
-#### PluginTaskInputParameter
+6. `PluginTaskOutput run(List<PluginTaskBaseParameterPrototype> baseParameters, List<PluginTaskInputParameter> inputParameters)`  
+   Synchronous execution.
+7. `Callable<PluginTaskOutput> runAsync(List<PluginTaskBaseParameterPrototype> baseParameters, List<PluginTaskInputParameter> inputParameters)`  
+   Asynchronous execution.
+8. `Callable<PluginTaskOutput> runAsync(List<PluginTaskBaseParameterPrototype> baseParameters, List<PluginTaskInputParameter> inputParameters, Consumer<PluginTaskProgress> progressConsumer)`  
+   Asynchronous execution with progress updates.
 
-The parameter itself passed to the plugin execution. Needs to be filled with:
-1. String *name*  
-Name of parameter, will be used to identify the parameter, must be unique
-2. ParameterTypeEnum *type*  
-Pre defined parameter type
-3. Object *value*  
-The value of parameter
+---
 
-#### PluginTaskBaseParameter
+## Domain Model
 
-The base parameter configured previously to be sent on every invoke. Needs to be filled with:
-1. String *name*  
-   Name of parameter, will be used to identify the parameter, must be unique
-2. ParameterTypeEnum *type*  
-   Pre defined parameter type
-3. Object *value*  
-   The value of parameter
+- [`PluginTaskInputParameterPrototype`](src/main/java/dev/poncio/AutomatePluginTask/PluginSdk/v1/domain/PluginTaskInputParameterPrototype.java): Defines input parameter metadata.
+- [`PluginTaskBaseParameterPrototype`](src/main/java/dev/poncio/AutomatePluginTask/PluginSdk/v1/domain/PluginTaskBaseParameterPrototype.java): Defines base parameter metadata.
+- [`PluginTaskInputParameter`](src/main/java/dev/poncio/AutomatePluginTask/PluginSdk/v1/domain/PluginTaskInputParameter.java): Actual input parameter for execution.
+- [`PluginTaskBaseParameter`](src/main/java/dev/poncio/AutomatePluginTask/PluginSdk/v1/domain/PluginTaskBaseParameter.java): Actual base parameter for execution.
+- [`PluginTaskOutput`](src/main/java/dev/poncio/AutomatePluginTask/PluginSdk/v1/domain/PluginTaskOutput.java): Result of plugin execution.
+- [`PluginTaskProgress`](src/main/java/dev/poncio/AutomatePluginTask/PluginSdk/v1/domain/PluginTaskProgress.java): Progress update for async execution.
 
-#### PluginTaskOutput
+---
 
-The result of an execution returned by plugin execution. Needs to be filled with:
-1. boolean *success*  
-Boolean that indicate the success of operation
-2. Integer *code*  
-Numeric code of execution result
-3. String *message*  
-The final message of execution
-4. List<String> *executionLogs*  
-List of messages to be persisted, it will help the user to understand better the execution process
+## Constants
 
-#### PluginTaskProgress
+- [`ParameterTypeEnum`](src/main/java/dev/poncio/AutomatePluginTask/PluginSdk/v1/constants/ParameterTypeEnum.java):  
+  - `STRING` - Textual values  
+  - `INTEGER` - Numeric values
 
-The progress used as partial update of an execution. Needs to be filled with:
-1. Double *progress*  
-Only showed in the interface, to help user understand better the progress
-2. String *executionLog*  
-It will be logged in the database to post analysis
+- [`PluginExecutionPlanEnum`](src/main/java/dev/poncio/AutomatePluginTask/PluginSdk/v1/constants/PluginExecutionPlanEnum.java):  
+  - `SYNC` - Synchronous execution  
+  - `ASYNC` - Asynchronous execution  
+  - `ASYNC_WITH_PROGRESS` - Asynchronous with progress callback
 
-### Constants
+---
 
-#### ParameterTypeEnum
+## How to Create a Plugin
 
-The possible type of the parameters. At the moment the options are:
-1. *STRING*  
-Textual values
-2. *INTEGER*  
-Numeric values
+1. **Create a Maven project** and add the dependency:
 
-#### PluginExecutionPlanEnum
-
-The possible type of the executions plans available. At the moment the options are:
-1. *SYNC*  
-Sync call
-2. *ASYNC*  
-Async call
-3. *ASYNC_WITH_PROGRESS*  
-Async with progress callback
-
-
-## The plugin creation
-
-Create a base maven project, and add the dependency in the pom file:
-```xml
-
-<dependencies>
+    ```xml
     <dependency>
         <groupId>dev.poncio.AutomatePluginTask</groupId>
         <artifactId>PluginSdk</artifactId>
     </dependency>
-</dependencies>
-```
+    ```
 
-Then, it should be created a main class that extends the `AbstractPluginTask` abstract class.  
-After it remember to declare the maven jar plugin passing the package and name of the main class:
+2. **Implement your plugin** by extending `AbstractPluginTask` and implementing the required methods.
 
-```xml
+3. **Configure the Maven JAR plugin** to set your main class:
 
-<build>
-    <plugins>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-jar-plugin</artifactId>
-            <version>3.2.0</version>
+    ```xml
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>your.package.YourPluginMainClass</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    ```
 
-            <configuration>
-                <archive>
-                    <manifest>
-                        <mainClass>package.MainClass</mainClass>
-                    </manifest>
-                </archive>
-            </configuration>
-        </plugin>
-    </plugins>
-</build>
-```
+4. **Build your plugin JAR** with Maven. The resulting JAR can be loaded by the Plugin Engine.
 
-Use the maven to build the JAR file to be loaded by the Plugin Engine.
+---
+
+## Example
+
+See [SampleHelloPlugin/README.md](../SampleHelloPlugin/README.md) for a working example.
+
+---
+
+## License
+
+MIT
+
+---
+
+## Contact
+
+For questions, contact:  
+E-mail: **ricardo@poncio.dev**  
+Telegram: **@rponcio**
