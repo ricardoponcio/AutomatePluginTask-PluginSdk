@@ -110,7 +110,7 @@ Create your plugin by extending [`dev.poncio.AutomatePluginTask.PluginSdk.v1.imp
 
 ## Example
 
-See [SampleHelloPlugin/README.md](https://github.com/ricardoponcio/AutomatePluginTask-SampleHelloPlugin) for a working example.
+See [SampleHelloPlugin/README.md](https://github.com/ricardoponcio/AutomatePluginTask-SampleHelloPlugin) for a working example.  
 See [Main Repository](https://github.com/ricardoponcio/AutomatePluginTask)
 
 ---
